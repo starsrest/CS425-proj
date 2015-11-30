@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<div class="container-fluid">
+	<center><h2>Check out as a guest</h2></center>
+
+    <link href="../static/css/signup.css" rel="stylesheet">
+        <center>
+        <form class="form-signin" action="/checkoutGuest" method="post">
+            <h2 class="form-signin-heading">Your Credit Card</h2>
+
+        {% with msgs = get_flashed_messages() %}
+            {% if msgs %}
+                {%- for msg in msgs %}
+                <center>
+                    <div class="alert alert-danger">
+                        {{ msg }}
+                    </div>
+                </center>
+                {% endfor -%}
+            {% endif %}
+        {% endwith %}
+        
+        <input type="text" name="cardNumber" class="form-control" placeholder="Card Number" required>
+        
+        <input type="name" name="holderName" class="form-control" placeholder="Holder Name" value="{{request.form.firstName}}" required autofocus>
+        
+        <br>
+        <div class="col-sm-12">
+        <select class="form-control" name="cardType">
+        	<option value="VISA">VISA</option>
+        	<option value="MasterCard">MasterCard</option>
+        	<option value="DISCOVER">DISCOVER</option>
+        	<option value="AMERICAN EXPRESS">AMERICAN EXPRESS</option>
+        </select>
+    	</div>
+
+    	<br><br>
+        <label for="expirationDate">Expiration Date</label>
+        <input type="month" name="expirationDate">
+
+        <br><br>
+        
+        <p><input type="submit" class="btn btn-lg btn-primary btn-block" value="Purchase">
+      </form>
+</div>
+
+{% endblock %}

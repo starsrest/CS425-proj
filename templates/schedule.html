@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<center>
+<div class="container-fluid">
+	<h2 class="sub-header">Movie Schedule</h2>
+    <div class="table-responsive">
+      <table class="table table-striped" style="width:85%">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Title</th>
+            <th>Theater</th>
+            <th>Location</th>
+            <th>Price</th> 
+            <th>discount</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+        <!-- movie schedule -->
+        {%- for movie in movies %}
+          <tr>
+            {%- for i in range(6) %}
+            <td>{{ movie[i] }}</td>
+            {% endfor -%}  
+            <td>
+              <form action="/checkout" method="POST">
+                <button name="movieSelected" value="{{movie}}">Buy Ticket
+              </form>
+            </td>
+          </tr>
+        {% endfor -%}
+        </tbody>
+    </table>
+</div>
+</center>
+{% endblock %}

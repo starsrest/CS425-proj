@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>add movie</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../static/css/signup.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="container">
+      <form class="form-signin" action="/add" method="post">
+        <h2 class="form-signin-heading">add a movie to database</h2>
+
+        {% with msgs = get_flashed_messages() %}
+            {% if msgs %}
+                {%- for msg in msgs %}
+                    <div class="alert alert-danger">
+                        {{ msg }}
+                    </div>
+                {% endfor -%}
+            {% endif %}
+        {% endwith %}
+
+        <label for="title" class="sr-only">Movie title</label>
+        <input type="text" name="title" id="title" class="form-control" placeholder="movie title" required autofocus>
+        
+        <label for="year" class="sr-only">Movie year</label>
+        <input type="number" name="year" id="year" class="form-control" placeholder="movie year" required autofocus>
+
+        <label for="genre" class="sr-only">Movie genre</label>
+        <input type="text" name="genre" id="genre" class="form-control" placeholder="movie genre" required autofocus>
+
+        <label for="length" class="sr-only">Movie length</label>
+        <input type="number" name="length" id="length" class="form-control" placeholder="movie length" required autofocus>
+        
+        <label for="director" class="sr-only">Movie director</label>
+        <input type="name" name="director" id="director" class="form-control" placeholder="movie director" required autofocus>
+
+        <label for="description" class="sr-only">Movie description</label>
+        <input type="text" name="description" id="description" class="form-control" placeholder="movie description" required autofocus>
+
+        <p><input type="submit" class="btn btn-lg btn-primary btn-block" value="submit">
+      </form>
+
+    </div> <!-- /container -->
+
+  </body>
+</html>

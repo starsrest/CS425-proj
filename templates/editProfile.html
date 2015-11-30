@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Edit Profile</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../static/css/signup.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="container">
+      <form class="form-signin" action="/editProfile" method="POST">
+        <h2 class="form-signin-heading">Edit Profile</h2>
+
+        {% with msgs = get_flashed_messages() %}
+            {% if msgs %}
+                {%- for msg in msgs %}
+                    <div class="alert alert-danger">
+                        {{ msg }}
+                    </div>
+                {% endfor -%}
+            {% endif %}
+        {% endwith %}
+        
+        <label>Enter your new phone number
+        </label>
+        <input type="tel" name="phone" id="phone" class="form-control" value="{{request.form.phone}}" required autofocus>
+        
+        <p><input type="submit" class="btn btn-lg btn-primary btn-block">
+      </form>
+
+    </div> <!-- /container -->
+
+  </body>
+</html>

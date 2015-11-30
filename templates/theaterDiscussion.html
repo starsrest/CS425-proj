@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<center>
+<div class="container-fluid">
+	<h2 class="sub-header">Theater Discussion</h2>
+	<div class="table-responsive">
+	<table class="table table-striped" style="width:85%">
+		<thead>
+			<tr>
+				<th>Theater</th>
+				<th>Location</th>
+				<th>Content</th>
+				<th>User</th>
+				<th>Time</th>
+			</tr>
+		</thead>
+		<tbody>
+		{%- for thread in threads %}
+			<tr>
+				<td>{{thread[0]}}</td>
+				<td>{{thread[1]}}</td>
+				<td><a href="{{url_for('thread', reviewUser=thread[3], reviewTime=thread[4])}}">{{thread[2]}}</a></td>
+				<td>{{thread[3]}}</td>
+				<td>{{thread[4]}}</td>
+			</tr>
+		</tbody>
+		{% endfor -%}
+	</table>
+
+	<br><br>
+	{% if loggedIn %}
+		<form action="/theaterDiscussion" method="post">
+			<h2>Start a new thread</h2>
+			<p>You'll get 5 points for each review.</p>
+			<br>
+
+			<label class="control-label col-sm-4">Theater</label>
+			<select class="col-sm-4" name="nameLocation">
+				{%- for theaterName in theaters %}
+				<option>{{theaterName + '-' + theaters[theaterName]}}</option>
+				{% endfor -%}
+			</select>
+
+			<br><br>
+
+			<label class="control-label col-sm-4">Review </label>
+			<input type="text" name="review" class="col-sm-4" placeholder="review" required>
+
+			<br><br>
+
+			<input type="submit">
+		</form>
+	{% else %}
+		<h2>Guests are read only, please log in to start a new thread.</h2>
+	{% endif %}
+</div>
+</center>
+
+{% endblock %}

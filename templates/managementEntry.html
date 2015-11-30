@@ -1,0 +1,36 @@
+{% extends "layoutManagement.html" %}
+{% block content %}
+
+<link href="../static/css/signup.css" rel="stylesheet">
+<center>
+<div class="container-fluid" style="padding-top: 50px">
+
+    <form class="form-signin" action="/management_signin" method="post">
+        <h2 class="form-signin-heading">Staff Log In</h2>
+
+    {% with msgs = get_flashed_messages() %}
+        {% if msgs %}
+            {%- for msg in msgs %}
+            <center>
+                <div class="alert alert-danger">
+                    {{ msg }}
+                </div>
+            </center>
+            {% endfor -%}
+        {% endif %}
+    {% endwith %}
+        
+        <input type="name" name="firstName" id="firstName" class="form-control" placeholder="first name" value="{{request.form.firstName}}" required autofocus>
+        
+        <input type="name" name="lastName" id="lastName" class="form-control" placeholder="last name" value="{{request.form.lastName}}" required autofocus>
+
+        <input type="number" name="ssn" id="lastName" class="form-control" placeholder="SSN" value="{{request.form.ssn}}" required autofocus>
+
+        <br><br>
+        
+        <p><input type="submit" class="btn btn-lg btn-primary btn-block" value="Log in">
+      </form>
+</div>
+</center>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<center>
+<div class="container-fluid">
+	<h2 class="sub-header">Review: {{review}}</h2>
+	<p>by&nbsp; {{reviewUser}} at &nbsp; {{reviewTime}}</p>
+	<div class="table-responsive">
+		<table class="table table-striped" style="width:85%">
+			<thead>
+				<tr>
+					<th>user</th>
+					<th>time</th>
+					<th>content</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				{%- for comment in comments %}
+					<tr>
+						{% for i in range(3) %}
+							<td>{{ comment[i] }}</td>
+						{% endfor -%}
+					</tr>
+				{% endfor -%}
+			</tbody>
+		</table>
+	</div>
+</div>
+</center>
+
+{% endblock %}

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Sign Up</title>
+    <!-- Bootstrap core CSS -->
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../static/css/signup.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="container">
+        <center>
+        <form class="form-signin" action="/signUp" method="post">
+            <h2 class="form-signin-heading">Sign Up</h2>
+            <p>You may add your credit card after sign up.</p>
+
+
+        {% with msgs = get_flashed_messages() %}
+            {% if msgs %}
+                {%- for msg in msgs %}
+                <center>
+                    <div class="alert alert-danger">
+                        {{ msg }}
+                    </div>
+                </center>
+                {% endfor -%}
+            {% endif %}
+        {% endwith %}
+        
+        <input type="name" name="username" id="username" class="form-control" placeholder="username" required>
+
+        <input type="password" name="password" id="password" class="form-control" placeholder="password" required>
+
+        
+        <input type="name" name="firstName" id="firstName" class="form-control" placeholder="first name" value="{{request.form.firstName}}" required autofocus>
+        
+        <input type="name" name="lastName" id="lastName" class="form-control" placeholder="last name" value="{{request.form.lastName}}" required autofocus>
+
+        <input type="email" name="email" id="email" class="form-control" placeholder="email address" value="{{request.form.email}}" required autofocus>
+        
+        <input type="text" name="address" id="address" class="form-control" placeholder="address" value="{{request.form.address}}" required autofocus>
+
+        <input type="tel" name="phone" id="phone" class="form-control" placeholder="phone number" value="{{request.form.phone}}" required autofocus>
+
+        <br>
+        <input type="radio" name="gender" value="male" checked>Male &nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="radio" name="gender" value="female">Female
+
+        <br><br>
+        
+        <p><input type="submit" class="btn btn-lg btn-primary btn-block" value="sign up">
+      </form>
+  </center>
+    </div> <!-- /container -->
+
+  </body>
+</html>

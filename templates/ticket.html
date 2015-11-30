@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<center>
+<div class="container-fluid">
+	<img src="/static/imgs/ticket.jpg" height="200" width="200">
+	<h2>You have purchased a ticket.</h2><br><br>
+		
+		<center>
+		<table class="table table-striped" style="width: 30%">
+			<tbody>
+				<tr>
+					<td>Time</td>
+					<td>{{movie['time']}}</td>
+				</tr>
+				<tr>
+					<td>Movie</td>
+					<td>{{movie['title']}}</td>
+				<tr>
+				<tr>
+					<td>Theater</td>
+					<td>{{movie['theater']}}</td>
+				<tr>
+				<tr>
+					<td>Location</td>
+					<td>{{movie['location']}}</td>
+				<tr>
+				<tr>
+					<td>Price</td>
+					<td><strike>{{movie['listprice']}}</strike> &nbsp;&nbsp; 
+						{{movie['price']}}
+					</td>
+				<tr>
+				<tr>
+					<td>Discount</td>
+					<td>{{movie['discount']}}</td>
+				<tr>
+			</tbody>
+		</table>
+		</center>
+		
+</div>
+</center>
+{% endblock %}
