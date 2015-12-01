@@ -12,17 +12,23 @@ def createDB():
 				(year INT, title TEXT,star_name TEXT,\
 				PRIMARY KEY (year, title, star_name))')
 
+	cur.execute('CREATE TABLE IF NOT EXISTS Members\
+				(username TEXT PRIMARY KEY, password TEXT NOT NULL,\
+  				reward TEXT NOT NULL, f_name TEXT NOT NULL,\
+  				l_name TEXT NOT NULL, gender TEXT NOT NULL,\
+  				email TEXT NOT NULL, address TEXT NOT NULL,\
+  				phone TEXT NOT NULL, status TEXT NOT NULL,\
+  				points INT NOT NULL)')
+
 	cur.execute('CREATE TABLE IF NOT EXISTS Reviews\
 				(username TEXT REFERENCES Members(username) ON DELETE SET NULL ON UPDATE CASCADE,\
 				time TIMESTAMP NOT NULL, type TEXT NOT NULL,\
 				content TEXT NOT NULL, visits INT NOT NULL,\
 				PRIMARY KEY (username, time))')
- 
+
 	cur.execute('CREATE TABLE IF NOT EXISTS Theaters\
-				(address TEXT PRIMARY KEY,\
-				 name TEXT NOT NULL,\
-				 company TEXT NOT NULL,\
-				 number_of_screens INT NOT NULL)')
+				(address TEXT PRIMARY KEY, name TEXT NOT NULL,\
+				company TEXT NOT NULL, number_of_screens INT NOT NULL)')
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Review_of_Movies\
 				(year INT REFERENCES Movies(year) ON DELETE SET NULL ON UPDATE CASCADE,\
@@ -42,43 +48,35 @@ def createDB():
 				phone TEXT NOT NULL, job_type TEXT NOT NULL,\
 				description_of_duty TEXT NOT NULL)')
 
-	cur.execute('CREATE TABLE IF NOT EXISTS Members\
-				(username TEXT PRIMARY KEY, password TEXT NOT NULL,\
-  				reward TEXT NOT NULL, f_name TEXT NOT NULL,\
-  				l_name TEXT NOT NULL, gender TEXT NOT NULL,\
-  				email TEXT NOT NULL, address TEXT NOT NULL,\
-  				phone TEXT NOT NULL, status TEXT NOT NULL,\
-  				points INT NOT NULL)')
-
 	cur.execute('CREATE TABLE IF NOT EXISTS Favorite_Type\
-				(username REFERENCES Members(username) ON DELETE SET NULL ON UPDATE CASCADE,\
-				type REFERENCES Movies(genre) ON DELETE SET NULL ON UPDATE CASCADE,\
+				(username TEXT REFERENCES Members(username) ON DELETE SET NULL ON UPDATE CASCADE,\
+				type TEXT,\
 				PRIMARY KEY(username, type))')
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Favorite_Theater\
-				(username REFERENCES Members(username) ON DELETE SET NULL ON UPDATE CASCADE,\
-				theater_address REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE,\
+				(username TEXT REFERENCES Members(username) ON DELETE SET NULL ON UPDATE CASCADE,\
+				theater_address TEXT REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE,\
 				PRIMARY KEY(username, theater_address))')
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Credit_Card\
 				(card_number INT PRIMARY KEY, holder_name TEXT NOT NULL,\
-				type TEXT NOT NULL, expiration_date DATE NOT NULL)')
+				type TEXT NOT NULL, expiration_time DATE NOT NULL)')
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Own\
-				(username INT REFERENCES Members(username) ON DELETE SET NULL ON UPDATE CASCADE,\
+				(username TEXT REFERENCES Members(username) ON DELETE SET NULL ON UPDATE CASCADE,\
 				card_number INT REFERENCES Credit_Card(card_number) ON DELETE SET NULL ON UPDATE CASCADE,\
 				PRIMARY KEY(username, card_number))')
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Employed_By\
 				(ssn INT PRIMARY KEY REFERENCES Staff(ssn) ON DELETE SET NULL ON UPDATE CASCADE,\
-				theater_address TEXT REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE)')
+				theater_address REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE)')
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Members_of\
-				(username INT PRIMARY KEY REFERENCES Member(username) ON DELETE SET NULL ON UPDATE CASCADE,\
-				theater_address TEXT REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE)')
+				(username TEXT PRIMARY KEY REFERENCES Member(username) ON DELETE SET NULL ON UPDATE CASCADE,\
+				theater_address REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE)')
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Working_Schedule\
-				(day date NOT NULL,\
+				(time DATE NOT NULL,\
 				ssn INT REFERENCES Staff(ssn) ON DELETE SET NULL ON UPDATE CASCADE,\
 				assignment TEXT NOT NULL,\
 				work_at TEXT REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE,\
@@ -87,21 +85,24 @@ def createDB():
 	cur.execute('CREATE TABLE IF NOT EXISTS Movie_Schedule\
 				(time TIMESTAMP NOT NULL,\
 				movie_title TEXT REFERENCES Movies(title) ON DELETE SET NULL ON UPDATE CASCADE,\
-				address TEXT REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE,\
+				theater_address TEXT REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE,\
 				movie_year INT REFERENCES Movies(year) ON DELETE SET NULL ON UPDATE CASCADE,\
 				discount REAL NOT NULL,\
 				price REAL NOT NULL,\
 				total_ticket INT NOT NULL,\
 				sold_ticket INT NOT NULL,\
-				PRIMARY KEY(time, movie_title, address, movie_year))')
+				PRIMARY KEY(time, movie_title, theater_address, movie_year))')
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Comments\
 				(username TEXT REFERENCES Members(username) ON DELETE SET NULL ON UPDATE CASCADE,\
 				time TIMESTAMP NOT NULL,\
 				content TEXT NOT NULL,\
-				review_username TEXT REFERENCES Members(username) ON DELETE SET NULL ON UPDATE CASCADE,\
-				review_time TIMESTAMP REFERENCES Reviews(time)ON DELETE SET NULL ON UPDATE CASCADE,\
+				reviews_username REFERENCES Members(username) ON DELETE SET NULL ON UPDATE CASCADE,\
+				review_time REFERENCES Reviews(time)ON DELETE SET NULL ON UPDATE CASCADE,\
 				PRIMARY KEY(username, time))')
+
+	cur.execute('CREATE TABLE IF NOT EXISTS Logger\
+				(message TEXT PRIMARY KEY)')
 
 	con.commit()
 
@@ -198,92 +199,92 @@ def insertDB():
 	#insert reviews, each movie or theater has 3 reviews
 	cur.execute("""
 				INSERT INTO Reviews VALUES('jim', '2015-11-1 15:30:26', 
-					'Movie', '10/10. Awesome!', 0)
+					'Movie', '10/10. Awesome!', 10)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('rose', '2015-11-2 08:46:11', 
-					'Movie', '5/10. Waste of my money.', 0)
+					'Movie', '5/10. Waste of my money.', 20)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('beth', '2015-11-3 20:01:30', 
-					'Movie', '8/10. Great Movie!', 0)
+					'Movie', '8/10. Great Movie!', 10)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('todd', '2015-11-4 20:01:30', 
-					'Movie', '6/10. I wound not recommend everyone to watch this.', 0)
+					'Movie', '6/10. I wound not recommend everyone to watch this.', 20)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('barb', '2015-11-5 20:01:30', 
-					'Movie', '3/10. It"s a piece of trash.', 0)
+					'Movie', '3/10. It"s a piece of trash.', 30)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('christ', '2015-11-6 20:01:30', 
-					'Movie', '4/10. Not worth watching.', 0)
+					'Movie', '4/10. Not worth watching.', 40)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('jim', '2015-11-7 20:01:30', 
-					'Movie', '7/10. Not bad.', 0)
+					'Movie', '7/10. Not bad.', 20)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('rose', '2015-11-8 20:01:30', 
-					'Movie', '2/10. Junk movie.', 0)
+					'Movie', '2/10. Junk movie.', 10)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('beth', '2015-11-9 20:01:30', 
-					'Movie', '9/10. Movie of the year.', 0)
+					'Movie', '9/10. Movie of the year.', 30)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('todd', '2015-11-10 20:01:30', 
-					'Theater', 'Not bad.', 0)
+					'Theater', 'Not bad.', 40)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('barb', '2015-11-11 20:01:30', 
-					'Theater', 'Great theater!', 0)
+					'Theater', 'Great theater!', 50)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('christ', '2015-11-12 20:01:30', 
-					'Theater', 'I will come back next time.', 0)
+					'Theater', 'I will come back next time.', 70)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('jim', '2015-11-13 20:01:30', 
-					'Theater', 'It''s not what I expected.', 0)
+					'Theater', 'It''s not what I expected.', 90)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('rose', '2015-11-14 20:01:30', 
-					'Theater', 'This theater is huge, I like it.', 0)
+					'Theater', 'This theater is huge, I like it.', 10)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('beth', '2015-11-15 20:01:30', 
-					'Theater', 'The popcorn is sweat!', 0)
+					'Theater', 'The popcorn is sweat!', 30)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('todd', '2015-11-16 20:01:30', 
-					'Theater', 'I have a wonderful experience.', 0)
+					'Theater', 'I have a wonderful experience.', 20)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('barb', '2015-11-17 20:01:30', 
-					'Theater', 'I will recommend everyone I know to watch movie in here.', 0)
+					'Theater', 'I will recommend everyone I know to watch movie in here.', 40)
 				""")
 
 	cur.execute("""
 				INSERT INTO Reviews VALUES('christ', '2015-11-18 20:01:30', 
-					'Theater', 'I love this place!', 0)
+					'Theater', 'I love this place!', 10)
 				""")
 
 
@@ -395,7 +396,7 @@ def insertDB():
 					'christ', '2015-11-18 20:01:30')
 				""")
 
-	# insert staff, 9 staff
+	#insert staff, 9 staff
 	cur.execute("""
 				INSERT INTO Staff VALUES(100000000, 'Lena', 'Zahradnik', 'Female', 'lena@gmail.com', 
 					'8967 Marshall Street North Augusta, SC 29841', '8997123377', 'Owner', 'Owner of the cinema')
@@ -445,7 +446,7 @@ def insertDB():
 				""")
 
 
-	# insert Favorite_Type
+	#insert Favorite_Type
 	cur.execute("""
 				INSERT INTO Favorite_Type VALUES('jim', 'Action')
 				""")
@@ -658,17 +659,17 @@ def insertDB():
 
 	#insert Movie_Schedule
 	cur.execute("""
-				INSERT INTO Movie_Schedule VALUES('2015-11-13', 'Crouching Tiger, Hidden Dragon', 
+				INSERT INTO Movie_Schedule VALUES('2015-11-13 10:00:00', 'Crouching Tiger, Hidden Dragon', 
 					'322 E Illinois St, Chicago, IL 60611', 2001, 0.8, 15, 300, 50)
 				""")
 
 	cur.execute("""
-				INSERT INTO Movie_Schedule VALUES('2015-11-14', 'Gone Girl', 
+				INSERT INTO Movie_Schedule VALUES('2015-11-14 10:00:00', 'Gone Girl', 
 					'600 E Grand Ave, Chicago, IL 60611', 2014, 0.5, 14, 500, 200)
 				""")
 
 	cur.execute("""
-				INSERT INTO Movie_Schedule VALUES('2015-11-15', 'Interstellar', 
+				INSERT INTO Movie_Schedule VALUES('2015-11-15 10:00:00', 'Interstellar', 
 					'600 N Michigan Ave, Chicago, IL 60611', 2014, 0.9, 12, 400, 100)
 				""")
 
@@ -1061,8 +1062,7 @@ def insertDB():
 					'I hope poster would give some reasons.', 
 					'christ', '2015-11-18 20:01:30')
 				""")
-
-
+	
 	con.commit()
 
 if __name__ == "__main__":
