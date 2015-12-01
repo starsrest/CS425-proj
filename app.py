@@ -311,13 +311,14 @@ def management_view():
 
     conn = sqlite3.connect('ticket_management.sqlite3')
     cur = conn.cursor()
-    cur.execute('SELECT time, f_name, l_name, ssn, assignment, work_at FROM working_schedule NATURAL JOIN Staff')
+    cur.execute('SELECT day, f_name, l_name, ssn, assignment, work_at FROM working_schedule NATURAL JOIN Staff')
     _latestAssignments = cur.fetchall()
 
-    cur.execute('SELECT f_name, l_name, ssn FROM Staff')
-    _names = []
+    cur.execute('SELECT f_name, l_name, ssn, job_type FROM Staff')
+    _staff = []
     for row in cur.fetchall():
-        _names.append( (str(row[0]) + ' ' + str(row[1]) + ' ' + str(row[2])) )
+        # _staff.append({'firstName':str(row[0]), 'lastName':str(row[1]), 'ssn':str(row[2]), 'jobType':str(row[3])})
+        _staff.append( (str(row[0]) + ' ' + str(row[1]) + ' ' + str(row[2]) + ' ' + str(row[3])) )
 
     _assignments = ['sell ticket', 'sell snack', 'clean the cinema', 'secure the cinema']
 
@@ -331,7 +332,7 @@ def management_view():
 
     return render_template('management_view.html',
                             privilege=_privilege,
-                            names=_names,
+                            staff=_staff,
                             assignments=_assignments,
                             locations=_locations,
                             latestAssignments=_latestAssignments,
@@ -340,7 +341,7 @@ def management_view():
 @app.route('/assign_work', methods=['POST', ])
 def assign_work():
     _date = request.form['d']
-    _namewssn = request.form['namewssn']
+    _namewssn = request.form['employee']
     _ssn = re.findall('[0-9]+', _namewssn)[0]
     _assignment = request.form['assignment']
     _work_at = request.form['work_at']
@@ -348,7 +349,7 @@ def assign_work():
     conn = sqlite3.connect('ticket_management.sqlite3')
     cur = conn.cursor()
 
-    cur.execute('INSERT INTO working_schedule (time, ssn, assignment, work_at) VALUES (?, ?, ?, ?)', (_date, _ssn, _assignment, _work_at))
+    cur.execute('INSERT INTO working_schedule (day, ssn, assignment, work_at) VALUES (?, ?, ?, ?)', (_date, _ssn, _assignment, _work_at))
     conn.commit()
 
     return redirect(url_for('management_view'))
