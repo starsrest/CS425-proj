@@ -44,9 +44,9 @@
 			<br><br>
 
 			<label>Name w SSN</label>
-			<select name="ssn">
-				{%- for name in names %}
-					<option value="{{name}}">{{name}}</option>
+			<select name="employee">
+				{%- for employee in staff %}
+					<option value="{{employee}}">{{employee}}</option>
 				{% endfor -%}
 			</select>
 
@@ -109,9 +109,13 @@
 		<h2>Delegate manager privilege to modify movie schedule<h2>
 			<form action="" method="post">
 				<select name="managerSSN">
+					{%- for employee in staff %}
+						{% if employee.split()[-1] == "Manager" %}
+							<option value="employee">{{employee}} 
+						{% endif %}
+					{% endfor -%}
 				</select>
 			</form>
-
 	{% endif %}
 </div>
 </center>
