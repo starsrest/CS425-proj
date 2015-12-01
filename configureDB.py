@@ -50,6 +50,7 @@ def createDB():
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Favorite_Type\
 				(username TEXT REFERENCES Members(username) ON DELETE SET NULL ON UPDATE CASCADE,\
+				type TEXT,\
 				PRIMARY KEY(username, type))')
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Favorite_Theater\
@@ -68,11 +69,11 @@ def createDB():
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Employed_By\
 				(ssn INT PRIMARY KEY REFERENCES Staff(ssn) ON DELETE SET NULL ON UPDATE CASCADE,\
-				theater_address TEXT REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE)')
+				theater_address REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE)')
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Members_of\
-				theater_address TEXT REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE)')
 				(username TEXT PRIMARY KEY REFERENCES Member(username) ON DELETE SET NULL ON UPDATE CASCADE,\
+				theater_address REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE)')
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Working_Schedule\
 				(time DATE NOT NULL,\
@@ -96,7 +97,8 @@ def createDB():
 				(username TEXT REFERENCES Members(username) ON DELETE SET NULL ON UPDATE CASCADE,\
 				time TIMESTAMP NOT NULL,\
 				content TEXT NOT NULL,\
-				review_time TIMESTAMP REFERENCES Reviews(time)ON DELETE SET NULL ON UPDATE CASCADE,\
+				reviews_username REFERENCES Members(username) ON DELETE SET NULL ON UPDATE CASCADE,\
+				review_time REFERENCES Reviews(time)ON DELETE SET NULL ON UPDATE CASCADE,\
 				PRIMARY KEY(username, time))')
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Logger\
