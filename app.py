@@ -141,13 +141,24 @@ def schedule():
 def editProfile():
     if request.method == 'POST':
         _phone = request.form['phone']
+        _email = request.form['email']
+        _address = request.form['address']
+
+        if not _phone and not _email and not _address:
+            flash('You must fill in at least one filed!')
+            return redirect(url_for('editProfile'))
 
         conn = sqlite3.connect('ticket_management.sqlite3')
         cur = conn.cursor()
 
-        cur.execute('UPDATE Members SET phone=? WHERE username=?', (_phone, session['username']))
+        if _phone: # if user filled in phone number
+            cur.execute('UPDATE Members SET phone=? WHERE username=?', (_phone, session['username']))
+        if _email:
+            cur.execute('UPDATE Members SET email=? WHERE username=?', (_email, session['username']))
+        if _address:
+            cur.execute('UPDATE Members SET address=? WHERE username=?', (_address, session['username']))
         conn.commit()
-        flash('Your phone number has been modified.')
+        flash('Your profile has been updated.')
 
         return redirect(url_for('profile'))
 
@@ -210,7 +221,7 @@ def movieDiscussion():
     
     # reviews table
     _loggedIn = (session.get('username') is not None)
-    cur.execute('SELECT title, content, username, time FROM Reviews NATURAL JOIN Review_of_Movies ORDER BY datetime(time) DESC')
+    cur.execute('SELECT title, content, username, time, visits FROM Reviews NATURAL JOIN Review_of_Movies ORDER BY datetime(time) DESC')
     _threads = cur.fetchall()
 
     # start a new thread
@@ -254,7 +265,7 @@ def theaterDiscussion():
 
     # reviews table
     _loggedIn = (session.get('username') is not None)
-    cur.execute('SELECT name, address, content, username, time FROM Reviews NATURAL JOIN Review_of_Theaters NATURAL JOIN Theaters ORDER BY datetime(time) DESC')
+    cur.execute('SELECT name, address, content, username, time, visits FROM Reviews NATURAL JOIN Review_of_Theaters NATURAL JOIN Theaters ORDER BY datetime(time) DESC')
     _threads = cur.fetchall()
 
     # start a new thread

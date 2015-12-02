@@ -13,6 +13,7 @@
 				<th>Content</th>
 				<th>User</th>
 				<th>Time</th>
+				<th>Visits</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -23,6 +24,7 @@
 				<td><a href="{{url_for('thread', reviewUser=thread[3], reviewTime=thread[4])}}">{{thread[2]}}</a></td>
 				<td>{{thread[3]}}</td>
 				<td>{{thread[4]}}</td>
+				<td>{{thread[5]}}</td>
 			</tr>
 		</tbody>
 		{% endfor -%}

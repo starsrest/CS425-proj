@@ -12,6 +12,7 @@
   </head>
 
   <body>
+    <center>
     <div class="container">
       <form class="form-signin" action="/editProfile" method="POST">
         <h2 class="form-signin-heading">Edit Profile</h2>
@@ -25,15 +26,21 @@
                 {% endfor -%}
             {% endif %}
         {% endwith %}
+      
+
+        <label>You are only able to change your phone number, email and address.</label>
+        <br><br>
+        <input type="tel" name="phone" id="phone" class="form-control" placeholder="phone number" value="{{request.form.phone}}" autofocus>
+
+        <input type="email" name="email" id="email" class="form-control" placeholder="email address" value="{{request.form.email}}" >
         
-        <label>Enter your new phone number
-        </label>
-        <input type="tel" name="phone" id="phone" class="form-control" value="{{request.form.phone}}" required autofocus>
-        
+        <input type="text" name="address" id="address" class="form-control" placeholder="address" value="{{request.form.address}}" >
+
+        <br>
         <p><input type="submit" class="btn btn-lg btn-primary btn-block">
       </form>
 
     </div> <!-- /container -->
-
+  </cneter>
   </body>
 </html>

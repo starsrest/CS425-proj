@@ -74,7 +74,7 @@
 	{% endif %}
 
 	<!-- members info, visiblefor owners and web admins -->
-	{% if privilege == "Owner" or "Admin" %}
+	{% if privilege == "Owner" or privilege == "Admin" %}
 		<hr>
 		<h2>Members</h2>
 		<table class="table table-striped" style="width:85%">
