@@ -83,7 +83,7 @@ def profile():
         cur.execute('SELECT username, password, f_name, l_name, gender, email, address, phone, points, status, reward FROM Members WHERE username=?', (session['username'], ))
         [_username, _password, _firstName, _lastName, _gender, _email, _address, _phone, _points, _status, _reward] = cur.fetchone()
 
-        cur.execute('SELECT card_number, holder_name, type, expiration_date FROM Credit_Card WHERE holder_name=?', (_username, ))
+        cur.execute('SELECT card_number, holder_name, type, expiration_time FROM Credit_Card WHERE holder_name=?', (_username, ))
         card = cur.fetchone()
         if card:
             _cardNumber, _holderName, _cardType, _expirationDate = card
@@ -349,10 +349,36 @@ def assign_work():
     conn = sqlite3.connect('ticket_management.sqlite3')
     cur = conn.cursor()
 
+    # not allowed to work at two different theaters at the same day
+    cur.execute('SELECT day, work_at FROM working_schedule WHERE ssn=?', (_ssn, ))
+    res = cur.fetchone()
+    if _date == res[0] and _work_at != res[1] :
+        flash('Not allowed to work in two different theaters in the same day!')
+        return redirect(url_for('management_view'))
+
+    # not allowed to work the same job at the same time
+    cur.execute('SELECT day, assignment FROM working_schedule WHERE ssn=?', (_ssn, ))
+    if (_date, _assignment) == cur.fetchone():
+        flash('Not allowed to work the same job in the same day')
+        return redirect(url_for('management_view'))        
+
     cur.execute('INSERT INTO working_schedule (day, ssn, assignment, work_at) VALUES (?, ?, ?, ?)', (_date, _ssn, _assignment, _work_at))
     conn.commit()
 
     return redirect(url_for('management_view'))
+
+@app.route('/delegateManager', methods=['POST'])
+def delegateManager():
+        _employee = request.form['managerSSN']
+        _name = str(_employee).split()[0] + ' '+ str(_employee).split()[1] 
+        _ssn = str(_employee).split()[2]
+        
+        conn = sqlite3.connect('ticket_management.sqlite3')
+        cur = conn.cursor()
+
+        cur.execute('UPDATE Staff SET description_of_duty=? WHERE _ssn=?', ('Updating movies', _ssn))
+        conn.commit()
+        return redirect(url_for('management_view'))
 
 @app.route('/addMovie', methods=['POST','GET'])
 def addMovie():

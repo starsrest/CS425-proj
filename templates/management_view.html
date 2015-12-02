@@ -107,14 +107,16 @@
 	<!-- delegate privilege to manager, owner only -->
 		<hr>
 		<h2>Delegate manager privilege to modify movie schedule<h2>
-			<form action="" method="post">
+			<form action="/delegateManager" method="post">
 				<select name="managerSSN">
 					{%- for employee in staff %}
 						{% if employee.split()[-1] == "Manager" %}
-							<option value="employee">{{employee}} 
+							<option value="{{employee}}">{{employee}} 
 						{% endif %}
 					{% endfor -%}
 				</select>
+				<br><br>
+				<input type="submit" value="submit">
 			</form>
 	{% endif %}
 </div>

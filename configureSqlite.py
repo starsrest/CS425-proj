@@ -76,7 +76,7 @@ def createDB():
 				theater_address REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE)')
 
 	cur.execute('CREATE TABLE IF NOT EXISTS Working_Schedule\
-				(time DATE NOT NULL,\
+				(day DATE NOT NULL,\
 				ssn INT REFERENCES Staff(ssn) ON DELETE SET NULL ON UPDATE CASCADE,\
 				assignment TEXT NOT NULL,\
 				work_at TEXT REFERENCES Theaters(address) ON DELETE SET NULL ON UPDATE CASCADE,\
