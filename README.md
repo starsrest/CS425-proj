@@ -1,43 +1,21 @@
-# Class porject for CS425
+# Online Ticketing Web App
 
-# How to connect to Oracle DB (pip & flask installed before)
-(A tutorial link: http://www.golden-orb.ltd.uk/working-with-oracle-from-python-on-a-mac/)
-1. Download Oracle instantclient basic, sqlplus and sdk.
-2. unzip file
-    
-    mkdir -p ~/Applications/Oracle
-    cd ~/Applications/Oracle
-    unzip ~/Downloads/instantclient-basiclite-macos.x64-11.2.0.4.0.zip
-    unzip ~/Downloads/instantclient-sqlplus-macos.x64-11.2.0.4.0.zip
-    unzip ~/Downloads/instantclient-sdk-macos.x64-11.2.0.4.0.zip
+## Features
 
-3. Add the following configuration to .bash_profile, and restart the shell.
-    
-    export ORACLE_HOME=~/Applications/Oracle/instantclient_11_2
-    export PATH="${PATH:+$PATH:}$ORACLE_HOME"
-    export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:+$DYLD_LIBRARY_PATH:}$ORACLE_HOME"
+This is a web app for selling tickets online.
+Users can check movie schedules and buy ticket, guest users will be asked for credit card info before purchasing.
+After signing up, user info will be stored in database.
+Discussion forum is divided into 2 parts, reviews of movies and reviews of theaters.
 
-4. Create the following file
-    
-    mkdir -p $ORACLE_HOME/network/admin
-    $ORACLE_HOME/network/admin/tnsnames.ora
+## Tech details
 
-5. put the following content in tnsnames.ora
+This web app is powered by Flask framwork. We used sqlite3 as database.
+In order to run this website, first run configureSqlite.py, then run app.py.
+You can check out what's in the database by DB_inspector.py.
 
-    ORCL =
-        (DESCRIPTION =
-        (ADDRESS = (PROTOCOL = TCP)(HOST = fourier.cs.iit.edu)(PORT = 1521))
-        (CONNECT_DATA =
-        (SERVER = DEDICATED)
-        (SERVICE_NAME = orcl)
-        )
-    )
+## Credit
 
-6. Set up a link for library file.
-
-    cd $ORACLE_HOME
-    ln -s libclntsh.dylib.11.1 libclntsh.dylib
-    
-7. pip install oc_Oracle
-   pip install sqlalchemy
-
+This is a class project for cs425 database organization.
+Pu Yixian did the website programming(python and HTML), and designed the schemas for database.
+Li Jiacheng made up the data for movie schedule and made improvements for database design.
+Peng Junyi did the testing part. 
