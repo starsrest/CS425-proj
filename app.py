@@ -1,4 +1,3 @@
-# 
 from flask import Flask, render_template, request, flash, redirect, url_for, session
 import sqlite3
 import re
@@ -18,27 +17,21 @@ def index():
 
 @app.route('/signUp', methods=['GET', 'POST'])
 def signUp():
-    if request.method == 'POST':
+    if request.method == 'POST': 
         _username = request.form['username']
         _password = request.form['password']
-        _firstName = request.form['firstName']
-        _lastName = request.form['lastName']
         _email = request.form['email']
-        _address = request.form['address']
-        _phone = request.form['phone']
-        _gender = request.form['gender']
 
-        if _username and _password and _firstName and _lastName and _email and _address and _phone and _gender: # all fieled get filled
-            conn = sqlite3.connect('ticket_management.sqlite3')
+        if _username and _password and _email: # all fieled received
+            conn = sqlite3.connect('ticketing_database.sqlite3')
             cur = conn.cursor()
 
-            # check if username is taken
+            # check if the username is taken
             cur.execute('SELECT * FROM Members WHERE username=?', (_username, )) 
             if cur.fetchone():
                 flash('This username is taken!')
             else: # store the user info into database
-                cur.execute('INSERT INTO Members (username, password, f_name, l_name, gender, email, address, phone, status, points, reward) \
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (_username, _password, _firstName, _lastName, _gender, _email, _address, _phone, "SILVER", 0, "none"))
+                cur.execute('INSERT INTO Members (username, password, email) VALUES (?, ?, ?)', (_username, _password, _email))
                 conn.commit()
 
                 session['username'] = _username
@@ -52,7 +45,7 @@ def validateLogin():
     _name = request.form['inputName']
     _password = request.form['inputPassword']
 
-    conn = sqlite3.connect('ticket_management.sqlite3')
+    conn = sqlite3.connect('ticketing_database.sqlite3')
     cur = conn.cursor()
     cur.execute('SELECT username, password FROM Members WHERE username = ? AND\
                 password = ?', (_name, _password))
@@ -79,7 +72,7 @@ def about():
 @app.route('/profile')
 def profile():
     if session.get('username'):
-        conn = sqlite3.connect('ticket_management.sqlite3')
+        conn = sqlite3.connect('ticketing_database.sqlite3')
         cur = conn.cursor()
         cur.execute('SELECT username, password, f_name, l_name, gender, email, address, phone, points, status, reward FROM Members WHERE username=?', (session['username'], ))
         [_username, _password, _firstName, _lastName, _gender, _email, _address, _phone, _points, _status, _reward] = cur.fetchone()
@@ -116,7 +109,7 @@ def addCreditCard():
         _cardType = request.form['cardType']
         _expirationDate = request.form['expirationDate']
 
-        conn = sqlite3.connect('ticket_management.sqlite3')
+        conn = sqlite3.connect('ticketing_database.sqlite3')
         cur = conn.cursor()
 
         cur.execute('INSERT INTO Credit_Card (card_number, holder_name, type, expiration_date) VALUES (?, ?, ?, ?)', (_cardNumber, _holderName, _cardType, _expirationDate))
@@ -129,7 +122,7 @@ def addCreditCard():
 
 @app.route('/schedule')
 def schedule():
-    conn = sqlite3.connect('ticket_management.sqlite3')
+    conn = sqlite3.connect('ticketing_database.sqlite3')
     cur = conn.cursor()
 
     cur.execute('SELECT time, movie_title, name, address, price, discount FROM Movie_Schedule NATURAL JOIN\
@@ -149,7 +142,7 @@ def editProfile():
             flash('You must fill in at least one filed!')
             return redirect(url_for('editProfile'))
 
-        conn = sqlite3.connect('ticket_management.sqlite3')
+        conn = sqlite3.connect('ticketing_database.sqlite3')
         cur = conn.cursor()
 
         if _phone: # if user filled in phone number
@@ -200,7 +193,7 @@ def discussion():
 
 @app.route('/movieDiscussion', methods=['GET', 'POST']) # movie forum
 def movieDiscussion():
-    conn = sqlite3.connect("ticket_management.sqlite3")
+    conn = sqlite3.connect("ticketing_database.sqlite3")
     cur = conn.cursor()
 
     if request.method == 'POST':
@@ -211,18 +204,17 @@ def movieDiscussion():
         cur.execute('SELECT * FROM Movies NATURAL JOIN Stars WHERE title=? AND director=? AND star_name=?', (_title, _director, _star))
         if cur.fetchone(): # if the movie-star-director combination is valid
             _review = request.form['review']
-            cur.execute('INSERT INTO Reviews (username, time, type, content) VALUES(?, ?, ?, ?)', (session.get('username'), datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "Movie", _review))
-            cur.execute('INSERT INTO Review_of_Movies (year, title, username, time) VALUES(?, ?, ?, ?)', (_year, _title, session.get('username'), datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            cur.execute('INSERT INTO Review_of_Movies (year, title, username, time, content) VALUES(?, ?, ?, ?, ?)', (_year, _title, session.get('username'), datetime.now().strftime('%Y-%m-%d %H:%M:%S'), _review))
             
-            flash('You have started a new thread! You''ve got 5 points')
-            cur.execute('UPDATE Members SET points = (SELECT points FROM Members WHERE username=?) + 5 WHERE username=?', (session.get('username'), session.get('username'))) # get credit for writing review
+            flash('You have started a new thread!')
+            
             conn.commit()
         else:
             flash('Invalid movie-star-director combination!')
     
     # reviews table
     _loggedIn = (session.get('username') is not None)
-    cur.execute('SELECT title, content, username, time, visits FROM Reviews NATURAL JOIN Review_of_Movies ORDER BY datetime(time) DESC')
+    cur.execute('SELECT title, content, username, time FROM Review_of_Movies ORDER BY datetime(time) DESC')
     _threads = cur.fetchall()
 
     # start a new thread
@@ -248,7 +240,7 @@ def movieDiscussion():
 
 @app.route('/theaterDiscussion', methods=['GET', 'POST']) # movie forum
 def theaterDiscussion():
-    conn = sqlite3.connect("ticket_management.sqlite3")
+    conn = sqlite3.connect("ticketing_database.sqlite3")
     cur = conn.cursor()
 
     if request.method == 'POST':
@@ -256,17 +248,16 @@ def theaterDiscussion():
         _name, _location= _nameLocation.split('-')
     
         _review = request.form['review']
-        cur.execute('INSERT INTO Reviews (username, time, type, content) VALUES(?, ?, ?, ?)', (session.get('username'), datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "Theater", _review))
-        cur.execute('INSERT INTO Review_of_Theaters (address, username, time) VALUES(?, ?, ?)', (_location, session.get('username'), datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+        cur.execute('INSERT INTO Review_of_Theaters (address, username, time, content) VALUES(?, ?, ?, ?)', (_location, session.get('username'), datetime.now().strftime('%Y-%m-%d %H:%M:%S'), _review))
     
         # award 5 points for review
-        flash('You have started a new thread! You''ve got 5 points') 
-        cur.execute('UPDATE Members SET points = (SELECT points FROM Members WHERE username=?) + 5 WHERE username=?', (session.get('username'), session.get('username'))) # get credit for writing review
+        flash('You have started a new thread!') 
+
         conn.commit()
 
     # reviews table
     _loggedIn = (session.get('username') is not None)
-    cur.execute('SELECT name, address, content, username, time, visits FROM Reviews NATURAL JOIN Review_of_Theaters NATURAL JOIN Theaters ORDER BY datetime(time) DESC')
+    cur.execute('SELECT name, address, content, username, time FROM Review_of_Theaters NATURAL JOIN Theaters ORDER BY datetime(time) DESC')
     _threads = cur.fetchall()
 
     # start a new thread
@@ -288,7 +279,7 @@ def thread():
     _reviewTime = request.args.get('reviewTime')
     _review = request.args.get('reviewContent')
 
-    conn = sqlite3.connect('ticket_management.sqlite3')
+    conn = sqlite3.connect('ticketing_database.sqlite3')
     cur = conn.cursor()
     cur.execute('SELECT username, time, content FROM Comments WHERE review_username=? AND review_time=?', (_reviewUser, _reviewTime))
     _comments = cur.fetchall()
@@ -299,155 +290,6 @@ def thread():
                             reviewUser=_reviewUser,
                             reviewTime=_reviewTime,
                             comments=_comments)
-
-    
-# -------------------------------------- Management View --------------------------------------
-
-@app.route('/managementEntry', methods=['GET'])
-def managementEntry():
-    return render_template('managementEntry.html')
-
-@app.route('/management_signin', methods=['POST'])
-def management_signin():
-    conn = sqlite3.connect('ticket_management.sqlite3')
-    cur = conn.cursor()
-
-    _ssn = request.form['ssn']
-    job_type = cur.execute('SELECT job_type FROM Staff WHERE ssn=?', (_ssn, )).fetchone()[0]
-    session['privilege'] = str(job_type)
-    return redirect(url_for('management_view'))
-
-@app.route('/management_view', methods=['GET', 'POST'])
-def management_view():
-    _privilege = session['privilege']    
-
-    conn = sqlite3.connect('ticket_management.sqlite3')
-    cur = conn.cursor()
-    cur.execute('SELECT day, f_name, l_name, ssn, assignment, work_at FROM working_schedule NATURAL JOIN Staff')
-    _latestAssignments = cur.fetchall()
-
-    cur.execute('SELECT f_name, l_name, ssn, job_type FROM Staff')
-    _staff = []
-    for row in cur.fetchall():
-        # _staff.append({'firstName':str(row[0]), 'lastName':str(row[1]), 'ssn':str(row[2]), 'jobType':str(row[3])})
-        _staff.append( (str(row[0]) + ' ' + str(row[1]) + ' ' + str(row[2]) + ' ' + str(row[3])) )
-
-    _assignments = ['sell ticket', 'sell snack', 'clean the cinema', 'secure the cinema']
-
-    cur.execute('SELECT address FROM theaters')
-    _locations = []
-    for row in cur.fetchall():
-        _locations.append(row[0]) # extract theater address from tuple
-
-    cur.execute('SELECT username, f_name, l_name, email, address, phone, status, points FROM Members')
-    _memebers = cur.fetchall()
-
-    return render_template('management_view.html',
-                            privilege=_privilege,
-                            staff=_staff,
-                            assignments=_assignments,
-                            locations=_locations,
-                            latestAssignments=_latestAssignments,
-                            members=_memebers)
-
-@app.route('/assign_work', methods=['POST', ])
-def assign_work():
-    _date = request.form['d']
-    _namewssn = request.form['employee']
-    _ssn = re.findall('[0-9]+', _namewssn)[0]
-    _assignment = request.form['assignment']
-    _work_at = request.form['work_at']
-
-    conn = sqlite3.connect('ticket_management.sqlite3')
-    cur = conn.cursor()
-
-    # not allowed to work at two different theaters at the same day
-    cur.execute('SELECT day, work_at FROM working_schedule WHERE ssn=?', (_ssn, ))
-    res = cur.fetchone()
-    if _date == res[0] and _work_at != res[1] :
-        flash('Not allowed to work in two different theaters in the same day!')
-        return redirect(url_for('management_view'))
-
-    # not allowed to work the same job at the same time
-    cur.execute('SELECT day, assignment FROM working_schedule WHERE ssn=?', (_ssn, ))
-    if (_date, _assignment) == cur.fetchone():
-        flash('Not allowed to work the same job in the same day')
-        return redirect(url_for('management_view'))        
-
-    cur.execute('INSERT INTO working_schedule (day, ssn, assignment, work_at) VALUES (?, ?, ?, ?)', (_date, _ssn, _assignment, _work_at))
-    conn.commit()
-
-    return redirect(url_for('management_view'))
-
-@app.route('/delegateManager', methods=['POST'])
-def delegateManager():
-        _employee = request.form['managerSSN']
-        _name = str(_employee).split()[0] + ' '+ str(_employee).split()[1] 
-        _ssn = str(_employee).split()[2]
-        
-        conn = sqlite3.connect('ticket_management.sqlite3')
-        cur = conn.cursor()
-
-        cur.execute('UPDATE Staff SET description_of_duty=? WHERE _ssn=?', ('Updating movies', _ssn))
-        conn.commit()
-        return redirect(url_for('management_view'))
-
-@app.route('/addMovie', methods=['POST','GET'])
-def addMovie():
-    if request.method == 'POST':
-        _title = request.form['title']
-        _year = request.form['year']
-        _genre = request.form['genre']
-        _length = request.form['length']
-        _director = request.form['director']
-        _description = request.form['description']
-
-        conn = sqlite3.connect('ticket_management.sqlite3')
-        cur = conn.cursor()
-
-        cur.execute('SELECT * FROM Movies WHERE title=? AND year=?',
-                    (_title, _year))
-
-        if cur.fetchone() is None: # if this mvoies is not in database
-            cur.execute('INSERT INTO Movies VALUES (?, ?, ?, ? ,?, ?)',\
-                       (_title, _year, _genre, _length, _director, _description))
-            
-            conn.commit()
-            return redirect(url_for('management_view'))
-        else:
-            flash('This movie already in database!')
-    else:
-        return render_template('addMovie.html')
-
-@app.route('/deleteMovie', methods=['POST','GET'])
-def deleteMovie():
-    if request.method == 'POST':
-        _title = request.form['title']
-        _year = request.form['year']
-
-        conn = sqlite3.connect('ticket_management.sqlite3')
-        cur = conn.cursor()
-
-        cur.execute('SELECT * FROM Movies WHERE title=? AND year=?',
-                    (_title, _year))
-        if cur.fetchone() is not None:
-            cur.execute('DELETE FROM Movies WHERE title=? AND year=?'
-                        (_title, _year,))
-
-            conn.commit()
-            return redirect(url_for('management_view'))
-        else:
-            flash('This movie is not in database!')
-            
-    else:
-        return render_template('deleteMovie.html')
-
-@app.route('/modifySchedule')
-def modifySchedule():
-    return render_template('movieTable.html')
-
-# @app.route('/setDiscount')
-# def setDiscount():
 
 
 # Run
