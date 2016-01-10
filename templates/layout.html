@@ -7,19 +7,18 @@
     
     <!-- Custom styles for this template -->
     <link href="../static/css/index.css" rel="stylesheet">
-
   </head>
+
   <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
 
           <ul class = "nav navbar-nav">
-          <li><a href="about">About</a></li>
-          <li><a href="managementEntry">Management</a></li>
           <li><a href="index">Home</a></li>
-          
           <li><a href="discussion">Discussion</a></li>
+          <li><a href="about">About</a></li>
+          
           {% if not username %}
           <li><a href="signUp">Sign Up</a></li>
           {% endif %}
